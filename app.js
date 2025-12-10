@@ -110,8 +110,8 @@ mapContainer.addEventListener('click', e => {
     map: mapSelect.value
   });
 
-  // Nie resetujemy placing, dzięki temu można stawiać kolejne pineski tego samego bossa
-  // Nie zmieniamy kursora, żeby było widać tryb ustawiania
+  // **Nie resetujemy placing, żeby można było stawiać wiele pinesek tego samego bossa**
+  // **Nie zmieniamy kursora, żeby tryb ustawiania był widoczny**
 
   render();
 });
@@ -122,7 +122,13 @@ pinsLayer.addEventListener('click', e => {
   if (confirm('Usuń pineskę?')) {
     const left = e.target.style.left;
     const top = e.target.style.top;
-    const index = pins.findIndex(p => p.x + '%' === left && p.y + '%' === top && p.map === mapSelect.value && p.channel === channelSelect.value);
+    const index = pins.findIndex(
+      p =>
+        p.x + '%' === left &&
+        p.y + '%' === top &&
+        p.map === mapSelect.value &&
+        p.channel === channelSelect.value
+    );
     if (index !== -1) {
       pins.splice(index, 1);
       render();
@@ -135,8 +141,6 @@ mapSelect.addEventListener('change', () => {
   const selectedMap = mapSelect.value;
   mapImg.src = MAPS[selectedMap].src;
   renderButtons();
-
-  // Możesz filtrować pineski jeśli chcesz, ale tutaj pozostawiam wszystkie
   render();
 });
 
