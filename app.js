@@ -1,6 +1,6 @@
 const MAPS = {
   Las: {
-    src: 'maps/las.svg',
+    src: 'maps/Snakefield_Interactive_Map.svg',
     buttons: [
       { l: 'Metin 75', m: 27, c: '#ff4444' },
       { l: 'Metin 80', m: 27, c: '#ffb000' },
@@ -16,7 +16,7 @@ const MAPS = {
     ]
   },
   Wężowe: {
-    src: 'maps/wezowe.svg',
+    src: 'maps/Snakefield_Interactive_Map.svg',
     buttons: [
       { l: 'Serpentor', m: 45, c: '#ff2b2b' },
       { l: 'Zadlak', m: 40, c: '#ffb000' },
