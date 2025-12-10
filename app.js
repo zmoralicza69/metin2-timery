@@ -110,8 +110,9 @@ mapContainer.addEventListener('click', e => {
     map: mapSelect.value
   });
 
-  placing = null;
-  mapContainer.style.cursor = 'default';
+  // Nie resetujemy placing, dzięki temu można stawiać kolejne pineski tego samego bossa
+  // Nie zmieniamy kursora, żeby było widać tryb ustawiania
+
   render();
 });
 
