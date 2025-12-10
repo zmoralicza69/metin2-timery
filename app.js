@@ -53,7 +53,6 @@ function renderButtons() {
     btn.onclick = () => {
       placing = b;
       mapContainer.style.cursor = 'crosshair';
-      alert('Kliknij na mapę, aby postawić pineskę');
     };
     buttons.appendChild(btn);
   });
