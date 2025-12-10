@@ -1,4 +1,3 @@
-
 /* Metin2 timers - standalone JS for static deploy */
 (function(){
   const MAPS = {
@@ -139,23 +138,38 @@
     const filtered = state.pins.filter(p => p.map === state.map && p.channel === state.channel);
     filtered.forEach(p => {
       const remain = Math.max(0, p.end - now());
-      const mm = String(Math.floor(remain/60)).padStart(2,"0");
-      const ss = String(remain%60).padStart(2,"0");
+      const mm = String(Math.floor(remain / 60)).padStart(2, "0");
+      const ss = String(remain % 60).padStart(2, "0");
       const div = document.createElement("div");
       div.className = "pin";
       div.style.left = p.x + "%";
       div.style.top = p.y + "%";
       div.style.background = p.color;
       div.dataset.id = p.id;
-      div.innerHTML = `<div class="time">${mm}:${ss}</div><small>${p.label}</small>`;
-      // blinking when <=60s and >0
+
+      div.innerHTML = `
+        <div>
+          <div class="name">${p.label}</div>
+          <div class="meta">${p.channel}</div>
+        </div>
+        <div class="time">${mm}:${ss}</div>
+      `;
+
+      // blinking when <= ALERT_AHEAD s and > 0
       if(remain <= ALERT_AHEAD && remain > 0){
         div.style.animation = "blink 1s infinite";
       } else {
         div.style.animation = "none";
       }
+
       // manual remove on click
-      div.addEventListener("click", (ev)=>{ ev.stopPropagation(); if(confirm('Usuń pineskę?')){ removePin(p.id); } });
+      div.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        if(confirm('Usuń pineskę?')){
+          removePin(p.id);
+        }
+      });
+
       pinsLayer.appendChild(div);
     });
   }
