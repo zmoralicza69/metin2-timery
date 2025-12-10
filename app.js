@@ -1,6 +1,6 @@
 const MAPS = {
   Las: {
-    src: 'maps/Snakefield_Interactive_Map.svg',
+    src: 'maps/Lungsam_Interactive_Map.svg',
     buttons: [
       { l: 'Metin 75', m: 27, c: '#ff4444' },
       { l: 'Metin 80', m: 27, c: '#ffb000' },
