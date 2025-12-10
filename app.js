@@ -57,40 +57,60 @@ function renderButtons() {
     buttons.appendChild(btn);
   });
 }
-
 function render() {
   const now = Date.now();
+
+  // usuń wygasłe pineski
   pins = pins.filter(p => now < p.end + 30000);
 
   pinsLayer.innerHTML = '';
   timersList.innerHTML = '';
 
-  [...pins]
+  // ===== PINY NA MAPIE (TYLKO AKTUALNY CH) =====
+  const pinsOnMap = pins
     .filter(p => p.map === mapSelect.value && p.channel === channelSelect.value)
-    .sort((a, b) => (a.end - now) - (b.end - now))
-    .forEach(p => {
-      const rem = Math.max(0, Math.floor((p.end - now) / 1000));
-      const mm = String(Math.floor(rem / 60)).padStart(2, '0');
-      const ss = String(rem % 60).padStart(2, '0');
+    .sort((a, b) => (a.end - now) - (b.end - now));
 
-      const pin = document.createElement('div');
-      pin.className = 'pin' + (rem <= 60 && rem > 0 ? ' blink' : '');
-      pin.style.left = p.x + '%';
-      pin.style.top = p.y + '%';
-      pin.style.background = p.color;
-      pin.textContent = `${mm}:${ss}`;
-      pinsLayer.appendChild(pin);
+  pinsOnMap.forEach(p => {
+    const rem = Math.max(0, Math.floor((p.end - now) / 1000));
+    const mm = String(Math.floor(rem / 60)).padStart(2, '0');
+    const ss = String(rem % 60).padStart(2, '0');
 
-      const row = document.createElement('div');
-      row.className = 'timerrow' + (rem <= 60 && rem > 0 ? ' blink' : '');
-      row.innerHTML = `<div>${p.label} • ${p.channel}</div><div>${mm}:${ss}</div>`;
-      timersList.appendChild(row);
+    const pin = document.createElement('div');
+    pin.className = 'pin' + (rem <= 60 && rem > 0 ? ' blink' : '');
+    pin.style.left = p.x + '%';
+    pin.style.top = p.y + '%';
+    pin.style.background = p.color;
+    pin.textContent = `${mm}:${ss}`;
 
-      if (rem === 60) {
-        alertSound.play().catch(() => {});
-      }
-    });
+    pinsLayer.appendChild(pin);
+  });
+
+  // ===== LISTA TIMERÓW (WSZYSTKIE CH) =====
+  const pinsOnList = pins
+    .filter(p => p.map === mapSelect.value)
+    .sort((a, b) => (a.end - now) - (b.end - now));
+
+  pinsOnList.forEach(p => {
+    const rem = Math.max(0, Math.floor((p.end - now) / 1000));
+    const mm = String(Math.floor(rem / 60)).padStart(2, '0');
+    const ss = String(rem % 60).padStart(2, '0');
+
+    const row = document.createElement('div');
+    row.className = 'timerrow' + (rem <= 60 && rem > 0 ? ' blink' : '');
+    row.innerHTML = `
+      <div>${p.label} • ${p.channel}</div>
+      <div>${mm}:${ss}</div>
+    `;
+    timersList.appendChild(row);
+
+    if (rem === 60) {
+      alertSound.play().catch(() => {});
+    }
+  });
 }
+
+
 
 // Dodawanie pineski po kliknięciu na mapę
 mapContainer.addEventListener('click', e => {
