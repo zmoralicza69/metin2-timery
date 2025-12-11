@@ -99,10 +99,22 @@ function render() {
     const row = document.createElement('div');
     row.className = 'timerrow' + (rem <= 60 && rem > 0 ? ' blink' : '');
     row.innerHTML = `
-      <div>${p.label} • ${p.channel}</div>
-      <div>${mm}:${ss}</div>
-    `;
-    timersList.appendChild(row);
+  <div>${p.label} • ${p.channel}</div>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <span>${mm}:${ss}</span>
+    <button class="remove-btn" data-id="${p.id}">X</button>
+  </div>
+`;
+timersList.appendChild(row);
+row.querySelector('.remove-btn').onclick = () => {
+  // Usuwamy pineskę i timer po ID
+  const index = pins.findIndex(pin => pin.id === p.id);
+  if (index !== -1) {
+    pins.splice(index, 1);
+    render();
+  }
+};
+
 
     if (rem === 60) {
       alertSound.play().catch(() => {});
