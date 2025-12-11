@@ -39,6 +39,21 @@ const mapContainer = document.getElementById('mapContainer');
 let pins = [];
 let placing = null;
 
+// ===== LOCALSTORAGE =====
+function savePins() {
+  localStorage.setItem('pinsData', JSON.stringify(pins));
+}
+
+function loadPins() {
+  const data = localStorage.getItem('pinsData');
+  if (!data) return;
+  const parsed = JSON.parse(data);
+  const now = Date.now();
+
+  // usuwamy tylko dawno wygasłe
+  pins = parsed.filter(p => now < p.end + 30000);
+}
+
 // Inicjalizacja opcji wyboru map i kanałów
 Object.keys(MAPS).forEach(m => mapSelect.add(new Option(m, m)));
 CHANNELS.forEach(c => channelSelect.add(new Option(c, c)));
@@ -57,6 +72,7 @@ function renderButtons() {
     buttons.appendChild(btn);
   });
 }
+
 function render() {
   const now = Date.now();
 
@@ -98,24 +114,28 @@ function render() {
 
     const row = document.createElement('div');
     row.className = 'timerrow' + (rem <= 60 && rem > 0 ? ' blink' : '');
+
     row.innerHTML = `
-  <div>${p.label} • ${p.channel}</div>
-  <div style="display:flex; gap:8px; align-items:center;">
-    <span>${mm}:${ss}</span>
-    <button class="remove-btn" data-id="${p.id}">X</button>
-  </div>
-`;
-timersList.appendChild(row);
-row.querySelector('.remove-btn').onclick = () => {
-  // Usuwamy pineskę i timer po ID
-  const index = pins.findIndex(pin => pin.id === p.id);
-  if (index !== -1) {
-    pins.splice(index, 1);
-    render();
-  }
-};
+      <div>${p.label} • ${p.channel}</div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span>${mm}:${ss}</span>
+        <button class="remove-btn" data-id="${p.id}">X</button>
+      </div>
+    `;
 
+    timersList.appendChild(row);
 
+    // ===== X — usuwanie =====
+    row.querySelector('.remove-btn').onclick = () => {
+      const index = pins.findIndex(pin => pin.id === p.id);
+      if (index !== -1) {
+        pins.splice(index, 1);
+        savePins();
+        render();
+      }
+    };
+
+    // ===== alert dźwiękowy 1:00 =====
     if (rem === 60) {
       alertSound.play().catch(() => {});
     }
@@ -142,13 +162,11 @@ mapContainer.addEventListener('click', e => {
     map: mapSelect.value
   });
 
-  // **Nie resetujemy placing, żeby można było stawiać wiele pinesek tego samego bossa**
-  // **Nie zmieniamy kursora, żeby tryb ustawiania był widoczny**
-
+  savePins();
   render();
 });
 
-// Usuwanie pineski po kliknięciu
+// Usuwanie pineski po kliknięciu na mapę
 pinsLayer.addEventListener('click', e => {
   if (!e.target.classList.contains('pin')) return;
   if (confirm('Usuń pineskę?')) {
@@ -163,6 +181,7 @@ pinsLayer.addEventListener('click', e => {
     );
     if (index !== -1) {
       pins.splice(index, 1);
+      savePins();
       render();
     }
   }
@@ -181,7 +200,8 @@ channelSelect.addEventListener('change', () => {
   render();
 });
 
-// Inicjalizacja strony
+// ===== Inicjalizacja strony =====
+loadPins();
 mapSelect.value = Object.keys(MAPS)[0];
 channelSelect.value = CHANNELS[0];
 mapImg.src = MAPS[mapSelect.value].src;
